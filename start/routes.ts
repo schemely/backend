@@ -20,6 +20,19 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/', async () => {
-  return { hello: 'world' }
-})
+Route.group(() => {
+  /**
+   * Auth
+   */
+  Route.group(() => {
+    Route.get('github/redirect', 'AuthController.githubRedirect').as('auth.github.redirect')
+    Route.get('github/callback', 'AuthController.githubCallback').as('auth.github.callback')
+    Route.post('login', 'AuthController.login').as('auth.login')
+    Route.get('logout', 'AuthController.logout').as('auth.logout')
+    Route.get('user', 'AuthController.user').middleware('auth').as('auth.user')
+  }).prefix('auth')
+
+  Route.get('/', async () => {
+    return { hello: 'world' }
+  })
+}).prefix('api')
