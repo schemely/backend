@@ -9,6 +9,21 @@ export default class User extends BaseModel {
   @column()
   public email: string
 
+  @column()
+  public avatar_url: string
+
+  @column()
+  public github_id: number
+
+  @column()
+  public github_login: string
+
+  @column()
+  public github_code: string
+
+  @column()
+  public github_token: string
+
   @column({ serializeAs: null })
   public password: string
 
