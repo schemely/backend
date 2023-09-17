@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import { column, beforeSave, BaseModel, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
+import Project from 'App/Models/Project'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -18,7 +19,7 @@ export default class User extends BaseModel {
   @column()
   public github_login: string
 
-  @column()
+  @column({ serializeAs: null })
   public github_code: string
 
   @column()
@@ -28,13 +29,16 @@ export default class User extends BaseModel {
   public password: string
 
   @column()
-  public rememberMeToken: string | null
+  public remember_me_token: string | null
+
+  @hasMany(() => Project)
+  public projects: HasMany<typeof Project>
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  public created_at: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  public updated_at: DateTime
 
   @beforeSave()
   public static async hashPassword(user: User) {
