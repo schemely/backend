@@ -1,6 +1,10 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Env from '@ioc:Adonis/Core/Env'
 import User from 'App/Models/User'
+import GithubAccessDeniedException from 'App/Exceptions/Github/GithubAccessDeniedException'
+import GithubStateMisMatchException from 'App/Exceptions/Github/GithubStateMisMatchException'
+import GithubErrorException from 'App/Exceptions/Github/GithubErrorException'
+import AuthGithubEmptyCodeException from 'App/Exceptions/Auth/AuthGithubEmptyCodeException'
 
 export default class AuthController {
   /**
@@ -17,15 +21,15 @@ export default class AuthController {
     const github = ally.use('github')
 
     if (github.accessDenied()) {
-      return { message: 'Access was denied' }
+      throw new GithubAccessDeniedException()
     }
 
     if (github.stateMisMatch()) {
-      return { message: 'Request expired. Retry again' }
+      throw new GithubStateMisMatchException()
     }
 
     if (github.hasError()) {
-      return github.getError()
+      throw new GithubErrorException(github.getError())
     }
 
     const githubUser = await github.user()
@@ -60,7 +64,7 @@ export default class AuthController {
     const code = request.input('code')
 
     if (code === undefined) {
-      throw new Error('Github code is empty.')
+      throw new AuthGithubEmptyCodeException()
     }
 
     const user = await User.findByOrFail('github_code', code)

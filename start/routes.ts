@@ -20,6 +20,8 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
+Route.where('id', Route.matchers.number())
+
 Route.group(() => {
   /**
    * Auth
@@ -29,10 +31,16 @@ Route.group(() => {
     Route.get('github/callback', 'AuthController.githubCallback').as('auth.github.callback')
     Route.post('login', 'AuthController.login').as('auth.login')
     Route.get('logout', 'AuthController.logout').as('auth.logout')
-    Route.get('user', 'AuthController.user').middleware('auth').as('auth.user')
+    Route.get('user', 'AuthController.user').as('auth.user').middleware('auth')
   }).prefix('auth')
 
-  Route.get('/', async () => {
-    return { hello: 'world' }
-  })
+  /**
+   * Project
+   */
+  Route.get('/projects', 'ProjectsController.index').as('project.index')
+  Route.get('/projects/:id', 'ProjectsController.show').as('project.show')
+  Route.post('/projects', 'ProjectsController.store').as('project.store').middleware('auth')
+  Route.get('/projects/slug-available', 'ProjectsController.isSlugAvailable').as(
+    'project.isSlugAvailable'
+  )
 }).prefix('api')
